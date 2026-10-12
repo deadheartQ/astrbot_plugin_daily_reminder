@@ -1,0 +1,3 @@
+# APScheduler 是 AstrBot 自己的依赖（内置 cron 也在用），这里显式声明只是为了让
+# 用户在纯 pip 环境里装插件时不会缺库。
+apscheduler>=3.10

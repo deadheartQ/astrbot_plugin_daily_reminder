@@ -1,0 +1,103 @@
+{
+  "basic": {
+    "type": "object",
+    "description": "基本设置",
+    "hint": "提醒条目与默认发送目标",
+    "items": {
+      "enable": {
+        "type": "bool",
+        "description": "启用定时提醒",
+        "default": true,
+        "hint": "关掉后不会注册任何定时任务，手动测试指令仍然可用"
+      },
+      "time": {
+        "type": "string",
+        "default": "12:30",
+        "description": "提醒时间（单独设置）",
+        "hint": "格式 HH:MM，例如 12:30，表示每天一次；也可以写五段 cron 表达式（分 时 日 月 周），例如 30 12 * * *。下面每条提醒如果没有自带时间，就用这个时间"
+      },
+      "reminders": {
+        "type": "list",
+        "default": [
+          "提醒我给微软签到"
+        ],
+        "description": "提醒内容",
+        "hint": "一条一行，只写要提醒什么。想给某一条单独指定时间就写成「时间 | 内容」，例如 21:00 | 该睡觉了；想指定发给谁就写成「内容 | 会话标识」。提醒内容里请不要出现竖线。以井号开头的行会被忽略，可当注释用"
+      },
+      "default_umo": {
+        "type": "string",
+        "default": "",
+        "description": "默认目标会话",
+        "hint": "条目里省略第三段时发到这里。格式为 平台:消息类型:号码，例如 default:FriendMessage:123456789。留空时该条目会被跳过并在日志里提示"
+      }
+    }
+  },
+  "content": {
+    "type": "object",
+    "description": "文案生成",
+    "hint": "优先让模型按人格口吻生成；模型不可用时自动降级为固定文案，提醒不会丢",
+    "items": {
+      "use_llm": {
+        "type": "bool",
+        "description": "让模型生成提醒文案",
+        "default": true,
+        "hint": "关掉则永远用固定文案，零模型依赖、零延迟"
+      },
+      "persona_prompt": {
+        "type": "string",
+        "default": "用你自己的口吻，口语化、简短，像平时私聊那样，可以带一点你的性格。",
+        "description": "口吻提示",
+        "hint": "拼在生成提示词最前面。想让提醒更像某个人格，就把那个人的语气描述粘进来"
+      },
+      "llm_provider_id": {
+        "type": "string",
+        "default": "",
+        "description": "优先使用的模型",
+        "hint": "格式为 服务商/模型名，例如 阿里云/kimi-k3。留空则用当前会话正在用的模型"
+      },
+      "llm_fallback_provider_ids": {
+        "type": "list",
+        "default": [],
+        "description": "备用模型列表",
+        "hint": "按顺序重试。AstrBot 自带的 llm_generate 没有任何 fallback，这里补上：前一个报错就换下一个，全都失败才用固定文案"
+      },
+      "fallback_text": {
+        "type": "string",
+        "default": "该提醒你一下：{content}",
+        "description": "固定文案模板",
+        "hint": "模型不可用或生成结果被清洗成空时使用。{content} 会替换成提醒内容"
+      },
+      "max_chars": {
+        "type": "int",
+        "default": 200,
+        "description": "单条提醒最长字数",
+        "hint": "超出后优先切在句末，避免发出半句"
+      }
+    }
+  },
+  "advanced": {
+    "type": "object",
+    "description": "运行参数",
+    "hint": "通常不用改",
+    "items": {
+      "timezone": {
+        "type": "string",
+        "default": "Asia/Shanghai",
+        "description": "定时任务使用的时区",
+        "hint": "容器时区常是 UTC，这里显式指定可以避免提醒时间整体偏移 8 小时"
+      },
+      "misfire_grace_seconds": {
+        "type": "int",
+        "default": 300,
+        "description": "错过触发点后的补救窗口秒数",
+        "hint": "服务刚好在那几分钟重启时，允许补发一次。设成 0 表示错过就跳过"
+      },
+      "verbose_log": {
+        "type": "bool",
+        "description": "输出详细日志",
+        "default": false,
+        "hint": "排查时打开，会打印每次生成的原始文案与清洗结果"
+      }
+    }
+  }
+}

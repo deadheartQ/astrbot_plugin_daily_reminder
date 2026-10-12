@@ -1,0 +1,35 @@
+name: astrbot_plugin_daily_reminder
+display_name: 定时提醒
+desc: |-
+  按固定时间给指定会话发一条主动提醒，**不经过主 Agent**，因此不会在对话历史里
+  留下任务播报式的伪对话。
+
+  **为什么不用内置的「未来任务」（CronJob）**：内置实现会在 system prompt 里注入
+  cron_job JSON（含会话 ID），user 轮又要求「总结本次行动与结果」，收尾时还会把
+  `[CronJob] 任务名: … triggered at <UTC 时间>, I finished this job, here is the result: …`
+  当作一条对话写进历史。于是机器人之后复述这件事时，会带出会话 ID、任务名、时间戳
+  这类内部标识。本插件走「直接发送 + 输出前强制清洗」，两处都不给这些字符串机会。
+
+  **主要能力**：
+  1. **时间单独设置**：面板里的「提醒时间」一项填 `HH:MM`（每天一次）或五段 cron 表达式
+     （分 时 日 月 周）；下面的「提醒内容」只写要提醒什么。
+     想给某一条单独指定时间，把它写成 `时间 | 内容` 即可（老配置自动兼容）。
+  2. 目标会话也单独一项，条目里可省略。
+  3. 文案优先由模型按人格口吻生成；模型不可用或没配模型时，自动降级为固定文案，
+     提醒不会因为上游挂了而失效。
+  4. 生成结果统一过一遍清洗器：会话 ID、时间戳、`[CronJob]`、任务/状态清单、
+     代码块、markdown 标记一律剔除；洗不出内容就用固定文案。
+  5. 显式时区，避免容器 TZ 是 UTC 导致整体偏 8 小时。
+  6. 同一时刻只发一次（重启不重发）。
+short_desc: 定时给指定会话发主动提醒，不走主 Agent、不带任务播报味
+version: "1.1.0"
+author: deadheartQ
+repo: https://github.com/deadheartQ/astrbot_plugin_daily_reminder
+astrbot_version: ">=4.0.0"
+support_platforms:
+  - aiocqhttp
+tags:
+  - 定时
+  - 提醒
+  - 主动消息
+  - reminder
