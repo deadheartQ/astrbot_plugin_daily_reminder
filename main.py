@@ -150,7 +150,7 @@ def _mask_umo(umo: str) -> str:
     return f"{head}:***{shown}"
 
 
-@register(PLUGIN_NAME, "Buddy", "定时提醒：按点给指定会话发一条主动消息", PLUGIN_VERSION)
+@register(PLUGIN_NAME, "deadheartQ", "定时提醒：按点给指定会话发一条主动消息", PLUGIN_VERSION)
 class DailyReminderPlugin(Star):
     """定时提醒插件。"""
 
